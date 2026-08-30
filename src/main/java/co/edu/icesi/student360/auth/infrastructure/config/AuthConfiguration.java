@@ -14,6 +14,7 @@ import co.edu.icesi.student360.auth.infrastructure.security.InMemoryLoginAttempt
 import co.edu.icesi.student360.auth.infrastructure.security.NimbusAccessTokenIssuer;
 import co.edu.icesi.student360.auth.infrastructure.security.PemSigningKeyProvider;
 import co.edu.icesi.student360.common.audit.AuditTrail;
+import java.nio.file.Path;
 import java.time.Clock;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +28,7 @@ public class AuthConfiguration {
   @ConditionalOnMissingBean
   public SigningKeyProvider signingKeyProvider(AuthProperties properties) {
     return new PemSigningKeyProvider(
-        properties.signingKey().privateKeyPath(), properties.signingKey().keyId());
+        Path.of(properties.signingKey().privateKeyPath()), properties.signingKey().keyId());
   }
 
   @Bean
