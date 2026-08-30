@@ -1,0 +1,10 @@
+# Production deltas only. Cloud Run terminates TLS in front of the container, and the
+# service-to-service world is Google ID tokens — the HS256 secret simply does not exist here.
+server:
+  forward-headers-strategy: framework
+
+student360:
+  security:
+    service-token:
+      mode: google
+      secret: ""
