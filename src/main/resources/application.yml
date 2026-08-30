@@ -16,7 +16,9 @@ spring:
   flyway:
     schemas: auth                   # this service migrates its own schema and nothing else
     default-schema: auth
-    locations: classpath:db/migration
+    # Structural migrations always; the seed differs per environment (prod re-points the second
+    # location and feeds the passwords as placeholders from Secret Manager).
+    locations: classpath:db/migration,classpath:db/seed/dev
 
 server:
   port: ${PORT:8081}                # PORT is the Cloud Run contract

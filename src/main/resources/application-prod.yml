@@ -3,6 +3,16 @@
 server:
   forward-headers-strategy: framework
 
+spring:
+  flyway:
+    locations: classpath:db/migration,classpath:db/seed/prod
+    placeholders:
+      # Fixed, human-typeable demo credentials — stored ONLY in Secret Manager, injected as env
+      # vars by terraform-core, hashed by pgcrypto inside the seed migration. No password, plain
+      # or hashed, lives in this repository for production.
+      seed_student_password: ${SEED_STUDENT_PASSWORD}
+      seed_staff_password: ${SEED_STAFF_PASSWORD}
+
 student360:
   security:
     service-token:
