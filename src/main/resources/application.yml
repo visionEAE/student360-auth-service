@@ -1,0 +1,72 @@
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:student360}
+    username: ${AUTH_DB_USER:auth_user}
+    password: ${AUTH_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate            # Flyway owns the schema; Hibernate only checks it matches
+    properties:
+      hibernate:
+        default_schema: auth
+  flyway:
+    schemas: auth                   # this service migrates its own schema and nothing else
+    default-schema: auth
+    locations: classpath:db/migration
+
+server:
+  port: ${PORT:8081}                # PORT is the Cloud Run contract
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+springdoc:
+  api-docs:
+    enabled: false                  # enabled in the dev profile only
+  swagger-ui:
+    enabled: false
+
+student360:
+  service-name: auth-service
+  security:
+    service-token:
+      secret: ${SERVICE_TOKEN_SECRET}
+      # The SSO is the front door: login, refresh, logout and JWKS are public by design and
+      # guarded by credentials, rotation and rate limiting rather than by a service token.
+      protected-paths: []
+
+auth:
+  issuer: ${JWT_ISSUER:http://localhost:8081}
+  audience: student360-api
+  signing-key:
+    private-key-path: ${JWT_PRIVATE_KEY_PATH:secrets/jwt-private.pem}
+    key-id: ${JWT_KEY_ID:student360-dev}
+  access-token-time-to-live: PT15M
+  refresh-token-time-to-live: P7D
+  refresh-cookie:
+    name: refresh_token
+    secure: true
+    path: /api/auth
+  login-rate-limit:
+    max-attempts: 5
+    window: PT1M
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+auth:
+  refresh-cookie:
+    secure: false                   # plain http on localhost during development
