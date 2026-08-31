@@ -18,3 +18,7 @@ student360:
     service-token:
       mode: google
       secret: ""
+
+auth:
+  refresh-cookie:
+    same-site: None
