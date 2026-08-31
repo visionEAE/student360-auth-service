@@ -11,8 +11,9 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 /**
- * The refresh token travels to browsers as an HttpOnly, SameSite=Strict cookie scoped to the auth
- * paths, so a script injected into the SPA cannot read it and no other origin can send it.
+ * The refresh token travels to browsers as an HttpOnly cookie scoped to the auth paths, so a script
+ * injected into the SPA cannot read it. SameSite is configuration: Strict locally, None in
+ * production, where the SPA and the gateway live on different run.app sites.
  */
 @Component
 public class RefreshCookies {
@@ -47,7 +48,7 @@ public class RefreshCookies {
     return ResponseCookie.from(settings.name(), value)
         .httpOnly(true)
         .secure(settings.secure())
-        .sameSite("Strict")
+        .sameSite(settings.sameSite())
         .path(settings.path());
   }
 }

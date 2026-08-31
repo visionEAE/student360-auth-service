@@ -24,7 +24,14 @@ public record AuthProperties(
   public record RefreshCookie(
       @DefaultValue("refresh_token") String name,
       @DefaultValue("true") boolean secure,
-      @DefaultValue("/api/auth") String path) {}
+      @DefaultValue("/api/auth") String path,
+      /**
+       * Strict locally, where SPA and gateway share a site. On Cloud Run each service's run.app
+       * hostname is its own site (run.app is on the Public Suffix List), so the refresh call is
+       * cross-site and the cookie only travels as SameSite=None — over HTTPS, HttpOnly, still
+       * scoped to the auth paths.
+       */
+      @DefaultValue("Strict") String sameSite) {}
 
   public record LoginRateLimit(
       @DefaultValue("5") int maxAttempts, @DefaultValue("PT1M") Duration window) {}
